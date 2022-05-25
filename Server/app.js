@@ -4,7 +4,6 @@ var SpotifyWebApi = require("spotify-web-api-node");
 require("dotenv").config();
 
 const port = 8000;
-const url = require("url");
 
 fs = require("fs");
 csv = require("csv-parser");
@@ -55,7 +54,7 @@ tokenRefreshInterval = setInterval(newToken, 1000 * 60 * 60);
 
 //processing song details in appropriate format
 const cache = {};
-fs.createReadStream("../songID_precompute.csv")
+fs.createReadStream("./songID_precompute.csv")
   .pipe(csv())
   .on("data", row => {
     let text = row.recommendation;
