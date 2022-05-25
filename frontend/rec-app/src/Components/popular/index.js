@@ -23,7 +23,7 @@ function Popular(props) {
     return idArray;
   }
   function getSpotifyData(songIdsArray) {
-    fetch(`${process.env.SERVER_URL}popular`, {
+    fetch(`${process.env.REACT_APP_SERVER_URL}popular`, {
       method: "POST",
       body: JSON.stringify({
         songIds: songIdsArray,

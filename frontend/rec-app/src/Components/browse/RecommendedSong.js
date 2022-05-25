@@ -5,7 +5,7 @@ import "../../App.css";
 function Recommendedsong(props) {
   function handleClick() {
     increment_searches_count(props.song.id);
-    fetch(`${process.env.SERVER_URL}recommend`, {
+    fetch(`${process.env.REACT_APP_SERVER_URL}recommend`, {
       method: "POST",
       body: JSON.stringify({
         id: props.song.id,

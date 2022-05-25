@@ -35,7 +35,7 @@ function Personalised(props) {
   const [playlist, setPlaylist] = useState([]);
 
   function handleClick() {
-    fetch(`${process.env.SERVER_URL}personalised`, {
+    fetch(`${process.env.REACT_APP_SERVER_URL}personalised`, {
       method: "POST",
       body: JSON.stringify({ data: userRatings }),
     })

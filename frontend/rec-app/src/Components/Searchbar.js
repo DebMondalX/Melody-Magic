@@ -19,7 +19,7 @@ function Searchbar(props) {
 
   async function handleClick() {
     increment_searches_count(selectedSong.id);
-    fetch(`${process.env.SERVER_URL}recommend`, {
+    fetch(`${process.env.REACT_APP_SERVER_URL}recommend`, {
       method: "POST",
       body: JSON.stringify({
         id: selectedSong.id,
