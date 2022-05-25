@@ -3,7 +3,7 @@ var SpotifyWebApi = require("spotify-web-api-node");
 
 require("dotenv").config();
 
-const port = 8000;
+const PORT = process.env.PORT || 8000;
 
 fs = require("fs");
 csv = require("csv-parser");
@@ -194,7 +194,7 @@ const server = http.createServer(async function (req, res) {
     "Access-Control-Allow-Origin": "*",
   };
 
-  const reqUrl = new URL(req.url, `http://localhost:${port}`);
+  const reqUrl = new URL(req.url, `http://localhost:${PORT}`);
 
   if (reqUrl.pathname === "/recommend") {
     const data = await getRequestBody(req);
@@ -265,10 +265,10 @@ const server = http.createServer(async function (req, res) {
   }
 });
 
-server.listen(port, function (error) {
+server.listen(PORT, function (error) {
   if (error) {
     console.log("something gone wrong", error);
   } else {
-    console.log("Server is listening on port" + port);
+    console.log("Server is listening on port " + PORT);
   }
 });
