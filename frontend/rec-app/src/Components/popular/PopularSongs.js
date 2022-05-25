@@ -3,7 +3,7 @@ import "../../App.css";
 
 function PopularSongs(props) {
   function handleClick() {
-    fetch(`http://localhost:8000/recommend`, {
+    fetch(`${process.env.SERVER_URL}recommend`, {
       method: "POST",
       body: JSON.stringify({
         id: props.song.id,
