@@ -9,7 +9,7 @@ root.render(
     <App />
     <img
       className='logo'
-      src='/logo.webp'
+      src='/images/logo.webp'
       alt='Melody Magic logo'
       width='150px'
       height='75px'
