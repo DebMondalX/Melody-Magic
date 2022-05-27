@@ -17,6 +17,18 @@ function Searchbar(props) {
           })
           .slice(0, 5);
 
+  function storeSongs(song) {
+    if (!localStorage.getItem("history")) {
+      const songDetails = [];
+      songDetails.push(song);
+      localStorage.setItem("history", JSON.stringify(songDetails));
+    } else {
+      const getPreviousData = JSON.parse(localStorage.getItem("history"));
+      getPreviousData.push(song);
+      localStorage.setItem("history", JSON.stringify(getPreviousData));
+      console.log(JSON.parse(localStorage.getItem("history")));
+    }
+  }
   async function handleClick() {
     increment_searches_count(selectedSong.id);
     fetch(`${process.env.REACT_APP_SERVER_URL}recommend`, {
@@ -29,7 +41,7 @@ function Searchbar(props) {
       .then(resp => resp.json())
       .then(data => {
         props.setSongs(data.tracks);
-
+        storeSongs(data.tracks[0]);
         console.log(data);
       });
   }

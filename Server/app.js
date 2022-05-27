@@ -40,6 +40,7 @@ function newToken() {
     function (data) {
       // Save the access token so that it's used in future calls
       spotifyApi.setAccessToken(data.body["access_token"]);
+      console.log(data.body["access_token"]);
     },
     function (err) {
       //Error management
@@ -50,7 +51,7 @@ function newToken() {
 
 //And set an interval to "refresh" it
 //(actually creating a new one) every hour or so
-tokenRefreshInterval = setInterval(newToken, 1000 * 60 * 60);
+tokenRefreshInterval = setInterval(newToken, 1000 * 50 * 60);
 
 //processing song details in appropriate format
 const cache = {};

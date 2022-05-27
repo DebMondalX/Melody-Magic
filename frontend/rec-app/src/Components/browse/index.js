@@ -4,6 +4,8 @@ import SelectedSong from "./SelectedSong";
 import Recommendedsong from "./RecommendedSong";
 import "../../App.css";
 
+//to search for songs
+//and display the recommended songs
 function Browse(props) {
   return (
     <div className='browseContainer'>

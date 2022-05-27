@@ -305,3 +305,16 @@
   justify-content: space-evenly;
   flex-wrap: wrap;
 }
+
+/* CSS for Search History page */
+.searchHistoryContainer {
+  font-family: "Noto Sans", sans-serif;
+  margin: 30px;
+}
+
+.searchHistoryTitle {
+  font-weight: 600;
+  text-align: left;
+  margin-bottom: 10px;
+  color: white;
+}
