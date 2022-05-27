@@ -8,6 +8,11 @@ const PORT = process.env.PORT || 8000;
 fs = require("fs");
 csv = require("csv-parser");
 
+var spotifyApi = new SpotifyWebApi({
+  clientId: process.env.SPOTIFY_CLIENT_ID,
+  clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
+});
+
 async function getRequestBody(req) {
   const buffers = [];
 
@@ -20,10 +25,22 @@ async function getRequestBody(req) {
   return data;
 }
 
-var spotifyApi = new SpotifyWebApi({
-  clientId: process.env.SPOTIFY_CLIENT_ID,
-  clientSecret: process.env.SPOTIFY_CLIENT_SECRET,
-});
+function dataValidity(data) {
+  if (typeof data.data !== "object") return false;
+  if (data.data.length === 4) {
+    const flag = 1;
+    for (const element of data.data) {
+      if (element < 0 || element > 5) {
+        flag = 0;
+        break;
+      }
+    }
+
+    return flag;
+  } else {
+    return false;
+  }
+}
 
 // Retrieve an access token.
 spotifyApi.clientCredentialsGrant().then(
@@ -200,67 +217,78 @@ const server = http.createServer(async function (req, res) {
   if (reqUrl.pathname === "/recommend") {
     const data = await getRequestBody(req);
 
-    spotifyApi.getTracks([data.id, ...cache[data.name]]).then(
-      function (data) {
-        res.writeHead(200, headers).end(JSON.stringify(data.body));
-      },
-      function (err) {
-        console.log(err);
-      }
-    );
+    if (cache[data.name]) {
+      spotifyApi.getTracks([data.id, ...cache[data.name]]).then(
+        function (data) {
+          res.writeHead(200, headers).end(JSON.stringify(data.body));
+        },
+        function (err) {
+          console.log(err);
+        }
+      );
+    } else {
+      res.end();
+    }
   } else if (reqUrl.pathname === "/popular") {
     const data = await getRequestBody(req);
-    // Get song metadata from Spotify and send response
-    spotifyApi.getTracks(data.songIds).then(
-      function (data) {
-        res.writeHead(200, headers).end(JSON.stringify(data.body));
-      },
-      function (err) {
-        console.log(err);
-      }
-    );
+    if (typeof data.songIds === "object" && data.songIds.length > 0) {
+      // Get song metadata from Spotify and send response
+      spotifyApi.getTracks(data.songIds).then(
+        function (data) {
+          res.writeHead(200, headers).end(JSON.stringify(data.body));
+        },
+        function (err) {
+          console.log(err);
+        }
+      );
+    } else {
+      res.end();
+    }
   } else if (reqUrl.pathname === "/personalised") {
     //set values from user to Table
     const data = await getRequestBody(req);
-    table.setCell(arr[6].name, "user", data.data[0]);
-    table.setCell(arr[19].name, "user", data.data[1]);
-    table.setCell(arr[3].name, "user", data.data[2]);
-    table.setCell(arr[18].name, "user", data.data[3]);
 
-    //generate prediction for table
-    const model = recommender.fit(table);
-    predicted_table = recommender.transform(table);
-    //get and arrange array of songs according to ratings
-    const ratingArray = [];
-    for (let i = 0; i < predicted_table.rowNames.length; i++) {
-      const song = predicted_table.rowNames[i];
-      const songObj = {
-        name: song,
-        rating: Math.round(predicted_table.getCell(song, "user")),
-      };
-      ratingArray.push(songObj);
-    }
-    ratingArray.sort((a, b) => (a.rating > b.rating ? -1 : 1));
+    if (dataValidity(data)) {
+      table.setCell(arr[6].name, "user", data.data[0]);
+      table.setCell(arr[19].name, "user", data.data[1]);
+      table.setCell(arr[3].name, "user", data.data[2]);
+      table.setCell(arr[18].name, "user", data.data[3]);
 
-    // Get top 10 song recommendations and associated song id
-    const topIds = [];
-    for (let i = 0; i < 10; i++) {
-      for (let j = 0; j < arr.length; j++) {
-        if (ratingArray[i].name === arr[j].name) {
-          topIds.push(arr[j].id);
+      //generate prediction for table
+      const model = recommender.fit(table);
+      predicted_table = recommender.transform(table);
+      //get and arrange array of songs according to ratings
+      const ratingArray = [];
+      for (let i = 0; i < predicted_table.rowNames.length; i++) {
+        const song = predicted_table.rowNames[i];
+        const songObj = {
+          name: song,
+          rating: Math.round(predicted_table.getCell(song, "user")),
+        };
+        ratingArray.push(songObj);
+      }
+      ratingArray.sort((a, b) => (a.rating > b.rating ? -1 : 1));
+
+      // Get top 10 song recommendations and associated song id
+      const topIds = [];
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < arr.length; j++) {
+          if (ratingArray[i].name === arr[j].name) {
+            topIds.push(arr[j].id);
+          }
         }
       }
-    }
 
-    // Get song metadata from Spotify and send response
-    spotifyApi.getTracks(topIds).then(
-      function (data) {
-        res.writeHead(200, headers).end(JSON.stringify(data.body));
-      },
-      function (err) {
-        console.log(err);
-      }
-    );
+      // Get song metadata from Spotify and send response
+      spotifyApi.getTracks(topIds).then(
+        function (data) {
+          res.writeHead(200, headers).end(JSON.stringify(data.body));
+        },
+        function (err) {
+          console.log(err);
+        }
+      );
+    }
   } else {
     res.end();
   }
