@@ -6,7 +6,7 @@ qualities among different items/products,while other algorithms compare between 
 or dislikes for certain items/products to generate recommendations. There are others that employ both of these features.
 
 # Live Demo
-(www.melody-magic.vercel.app)
+[click here](www.melody-magic.vercel.app)
 Search for any song- click on the song name to listen.
 
 Generate your own personalised playlist.
