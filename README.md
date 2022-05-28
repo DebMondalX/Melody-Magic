@@ -1,9 +1,9 @@
 # Melody-Magic
 A web application to demonstrate various kinds of recommendation algorithms. 
 
-There are various algorithms that recommend users items/products  based on comparison between certain 
+There are various algorithms that recommend users items/products based on comparison between certain 
 qualities among different items/products,while other algorithms compare between users and their likes 
-or dislikes for  generate recommendations. There are others that employ both of these features.
+or dislikes for certain items/products to generate recommendations. There are others that employ both of these features.
 
 # Live Demo
 www.melody-magic.vercel.app 
@@ -43,4 +43,60 @@ Choose from the most popular songs or any random song suggestion.
    - python
  
  ## Development
+ ### Configuration, Setup and Running 
+  
+   The data-preparation folder contains the code to generate the songs data in the form of a csv file. A copy of the file is already present in the Server folder.
+   
+   1. Clone the repository.
+   2. Create a new [supabase project](https://supabase.com/)
+   3. Open the supabase project, go to table editor and create a new table named "song_recommendations". Select "import data via spreadsheet" option, and upload Server/songID_precompute.csv . Set the index column as primary key.
+   4. Go to SQL editor of the supabase project and run the following queries:
+   
+       alter table song_recommendations add column searches_count int default 0;
+
  
+     alter table song_recommendations alter column index type int using (index::int);
+
+    
+   
+        alter table song_recommendations rename index to id;
+
+    
+ 5. Run these queries in the SQL editor:
+    
+    create or replace function increment_searches_count(song_id_input text) returns void as 
+  $$
+  update song_recommendations
+  set searches_count = searches_count + 1
+  where song_id = song_id_input
+  $$
+  language sql
+    
+
+    
+    create or replace function get_random_song_ids() returns table(
+  song_id text
+) as
+$$
+begin 
+  return query SELECT s.song_id
+  FROM (
+    SELECT generate_series(1,5), (random()*4200):: int AS id
+  ) r
+  JOIN song_recommendations s
+  ON s.id = r.id;A
+  end;
+  $$
+  language plpgsql
+ 
+ 
+ 6. Create a .env file at frontend/rec-app/ and add REACT_APP_SUPABASE_URL and REACT_APP_SUPABASE_ANON_KEY to it ( get the supabase url and the anon key
+    from the newly created project)
+ 7. Add REACT_APP_SERVER_URL=http://localhost:8000/ to the same .env file.
+ 8. Run npm install in the terminal in frontend/rec-app/ directory.
+ 9. Create a new app from spotify developers dashboard.
+ 10. Create a new .env file in Server/ and add the SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET taken from spotify developers' dashboard of the app.
+ 11. Run npm install in the terminal in the Server/ directory.
+ 12. Run npm start the terminal in the Server/ directory.
+ 13. Run npm start in the terminal in frontend/rec-app/ directory.
+  
