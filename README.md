@@ -12,7 +12,9 @@ Search for any song- click on the song name to listen.
 
 Generate your own personalised playlist.
 
-Choose from the most popular songs or any random song suggestion. 
+Choose from the most popular songs or any random song suggestion.
+
+The server runs [here](https://melody-magic-production.up.railway.app)
 
 # Website Preview
 ![page-one](https://user-images.githubusercontent.com/71892789/170827537-f0f7a451-4ae0-4c98-94c7-7b4ac24c41c9.jpg)
